@@ -1,0 +1,180 @@
+# 计算属性&监听器
+## 计算属性
+```html
+<div id="app">
+			<p v-bind:id="name">{{ reversedMessage }}</p>
+		</div>
+
+		<script>
+			var name = {
+				namename: "xiaoming"
+			}
+			new Vue({
+				el: '#app',
+				data: {
+					foo: 'bar',
+					name: name
+				},
+				computed: {
+					reversedMessage: function() {
+						alert("haha！")
+					}
+				}
+			})
+		</script>
+```
+上面的栗子实现字符串的翻转，``reversedMessage`` 就是我们声明的一个``计算属性``
+
+
+**计算属性缓存 vs 方法**
+```html
+<div id="app">
+			<p v-bind:id="name">{{ reversedMessage() }}</p>
+		</div>
+
+		<script>
+			var name = {
+				namename: "xiaoming"
+			}
+			new Vue({
+				el: '#app',
+				data: {
+					foo: 'bar',
+					name: name
+				},
+				methods: {
+					reversedMessage: function() {
+						alert("haha！")
+					}
+				}
+			})
+		</script>
+```
+我们可以通过在表达式中调用方法来达到同样的效果：
+
+那么上面两种写法有什么区别呢？
+
+* 计算属性：是基于它们的响应式依赖进行缓存的。只在相关响应式依赖发生改变时它们才会重新求值。
+* 调用方法：每当触发重新渲染时，调用方法将总会再次执行函数。
+
+**计算属性 vs 侦听属性**
+
+有关监听属性的有关内容，请看下面的..
+
+**计算属性的setter**
+
+计算属性默认有一个getter，你可以手动为其添加一个setter：
+```html
+<div id="app">
+			<p>{{ reversedMessage }}</p>
+		</div>
+
+		<script>
+			
+			var vm = new Vue({
+				el: '#app',
+				data: {
+					firstName: "haha"
+				},
+				computed: {
+					reversedMessage: {
+						get: function() {
+							return this.firstName
+						},
+						// setter
+						set: function() {
+							this.firstName = "xiaoming"
+						}
+					}
+				}
+			})
+		</script>
+```
+上面这个栗子，直接执行下来在页面中显示的是"haha"
+
+当我们执行``vm.reversedMessage="xiaoming"``  显示出来的结果为"xiaoming"
+
+* 关于js对象中的set/get方法，我们来复习一下：
+```
+//对象中的set/get方法
+
+var obj = {name:'jzx',
+        _age:18,   //属性前加_建议不要直接访问
+        get age(){
+            return this._age;
+        },
+        set age(val){
+            this._age = val;
+        }
+    };
+console.log(obj._age);  //18
+console.log(obj.age);   //18
+obj.age = 20;  //赋值
+console.log(obj.age);  //20
+```
+
+上面这个栗子我们可以看出来，js对象在默认情况下只会执行get方法，在写入属性是就会调用set方法。
+
+[【js中的get和set方法（demo说明）】](https://blog.csdn.net/mutouafangzi/article/details/77875216)
+
+## 监听器
+``watch``
+ Vue 通过 watch 选项提供了一个更通用的方法，来响应数据的变化。
+ ```html
+ <div id="watch-example">
+			<p>
+				Ask a yes/no question:
+				<input v-model="question">
+			</p>
+			<p>{{ answer }}</p>
+		</div>
+
+		<script>
+			new Vue({
+				el: '#watch-example',
+				data: {
+					question: '',
+					answer: 'I cannot give you an answer until you ask a question!'
+				},
+				watch: {
+					// 如果 `question` 发生改变，这个函数就会运行
+					question: function() {
+						this.answer = 'Waiting for you to stop typing...'
+					}
+				},
+			})
+		</script>
+ ```
+ 
+ 下面的栗子Vue就不是重点啦，是我在学习Vue过程中发现的之前学习的知识漏洞~~
+
+ ## 关于回调函数中传参的问题
+ 我们来看这样一个栗子，页面显示结果为"xiaoming"
+ ```html
+ <div id="demo">{{ fullName }}</div>
+
+		<script>
+			var vm = new Vue({
+				el: '#demo',
+				data: {
+					firstName: 'Foo',
+					fullName: 'xiaoming'
+				},
+				watch: {
+					firstName: function(val) { 
+						console.log(arguments)
+						this.fullName =this.firstName+' ' +val 
+					},
+				}
+			})
+		</script>
+ ```
+ 我们在控制台中输入：``vm.firstName="men"``
+ 
+ 页面显示结果为：``men men``
+ 
+ 控制台打印结果为：``Arguments(2) ["men", "Foo", callee: ƒ, Symbol(Symbol.iterator): ƒ]``
+ 
+ 上面的显示结果可以这样理解，fristName值改变时，执行function回调函数，回调函数的形参是系统提供给它的，这段代码中，是将当前改变的fristName值的之前的值作为形参传递给回调函数的
+ 
+ 可以照着事件中的形参 e对象来理解~~~
