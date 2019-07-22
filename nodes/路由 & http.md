@@ -47,6 +47,7 @@ new Vue({
 </template>
 ```
 
+
 此时在浏览器的地址框输入对用的的地址
 
 ``http://localhost:8080/helloworld``
@@ -54,6 +55,28 @@ new Vue({
 ``http://localhost:8080/``
 
 将会实现不同的地址跳转
+
+#### 引用 ``<router-view></router-view>``
+```html
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+<div id="app">
+  <h1>Hello App!</h1>
+  <p>
+    <!-- 使用 router-link 组件来导航. -->
+    <!-- 通过传入 `to` 属性指定链接. -->
+    <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
+    <router-link to="/foo">Go to Foo</router-link>
+    <router-link to="/bar">Go to Bar</router-link>
+  </p>
+  <!-- 路由出口 -->
+  <!-- 路由匹配到的组件将渲染在这里 -->
+  <router-view></router-view>
+</div>
+```
+
+在注入路由后，我们可以在任何组件内通过 ``this.$router`` 访问路由器，也可以通过 this.$route 访问当前路由：
 
 **a标签导航栏效果**
 
@@ -86,7 +109,7 @@ new Vue({
 </template>
 ```
 
-### 引用 ``<router-view></router-view>``???
+
 ## http
 
 安装 ``vue-resource``
