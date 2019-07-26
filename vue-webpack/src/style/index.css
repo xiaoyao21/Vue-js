@@ -1,0 +1,9 @@
+/* .box{
+    color:red
+} */
+
+
+.box {
+    color: red;
+    display: flex;
+}
